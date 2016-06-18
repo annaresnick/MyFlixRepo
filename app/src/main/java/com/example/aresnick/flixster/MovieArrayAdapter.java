@@ -1,6 +1,7 @@
 package com.example.aresnick.flixster;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import com.example.aresnick.flixster.models.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
@@ -39,11 +42,32 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
         TextView tvOverview = (TextView) convertView.findViewById(R.id.tvOverview);
 
+        //restrict overview length
+        String overview = movie.getOverview();
+        String overviewCondensed;
+
+        if(overview.length() >= 150) {
+            overviewCondensed = overview.substring(0, 150) + "...";
+        } else {
+            overviewCondensed = overview;
+        }
+        // fix the orientation
+        boolean isLandscape = ivImage.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        if(isLandscape){
+            //Configure ivImage to have backdrop image URL
+            Picasso.with(getContext()).load(movie.getBackdropPath()).into(ivImage);
+            //Picasso.with(getContext()).load(movie.getBackdropPath()).transform(new RoundedCornersTransformation(10,10)).into(ivImage);
+        } else{
+            //Configure ivImage to have poster image URL
+            Picasso.with(getContext()).load(movie.getPosterPath()).into(ivImage);
+            Picasso.with(getContext()).load(movie.getPosterPath()).transform(new RoundedCornersTransformation(10,10)).into(ivImage);
+        }
+
+
         // populate data
         tvTitle.setText(movie.getOriginalTitle());
-        tvOverview.setText(movie.getOverview());
+        tvOverview.setText(overviewCondensed);
 
-        Picasso.with(getContext()).load(movie.getPosterPath()).into(ivImage);
 
         // return the view
         return convertView;

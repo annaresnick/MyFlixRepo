@@ -1,8 +1,11 @@
 package com.example.aresnick.flixster;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.aresnick.flixster.models.Movie;
@@ -18,7 +21,6 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class MoviesActivity extends AppCompatActivity {
-
     ArrayList<Movie> movies;
     MovieArrayAdapter movieAdapter;
     ListView lvItems;
@@ -29,6 +31,20 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
 
         lvItems = (ListView) findViewById(R.id.lvMovies);
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MoviesActivity.this, ReviewsActivity.class);
+                i.putExtra("text", movies.get(position).getOriginalTitle());
+                i.putExtra("text1", movies.get(position).getOverview());
+                i.putExtra("text2", movies.get(position).getPosterPath());
+                i.putExtra("text3", movies.get(position).getReleaseDate());
+                i.putExtra("text4", (double)movies.get(position).getVoteAverage());
+                i.putExtra("text5", movies.get(position).getBackdropPath());
+                i.putExtra("position", position);
+                startActivity(i);
+            }
+        });
         movies = new ArrayList<>();
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
@@ -57,6 +73,8 @@ public class MoviesActivity extends AppCompatActivity {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+
+
 
 /*        // 1. Get the actual movies
         ArrayList<Movie> movies = Movie.getFakeMovies();
